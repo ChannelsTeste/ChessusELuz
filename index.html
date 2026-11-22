@@ -1,0 +1,442 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sport TV - Live Channels</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #080b12;
+    color: white;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+}
+
+header {
+    height: 65px;
+    background: #111827;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 0 20px;
+    border-bottom: 1px solid #263244;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: #ef4444;
+}
+
+.logo span {
+    color: white;
+}
+
+.menu-btn {
+    background: #263244;
+    color: white;
+    border: none;
+    padding: 9px 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.menu-btn:hover {
+    background: #374151;
+}
+
+.header-right {
+    margin-left: auto;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.container {
+    display: flex;
+    height: calc(100vh - 65px);
+}
+
+.sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: #111827;
+    overflow-y: auto;
+    padding: 15px 10px;
+    flex-shrink: 0;
+    transition: width 0.25s ease,
+                min-width 0.25s ease,
+                padding 0.25s ease;
+}
+
+.sidebar h3 {
+    font-size: 12px;
+    color: #94a3b8;
+    margin: 10px 10px 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.channel {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 13px 12px;
+    margin-bottom: 5px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: #cbd5e1;
+    text-align: left;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.channel:hover {
+    background: #263244;
+    color: white;
+}
+
+.channel.active {
+    background: #dc2626;
+    color: white;
+    font-weight: bold;
+}
+
+.channel .dot {
+    width: 8px;
+    height: 8px;
+    background: #64748b;
+    border-radius: 50%;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.channel.active .dot {
+    background: white;
+}
+
+.main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 18px;
+}
+
+.player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.player-header h2 {
+    font-size: 19px;
+}
+
+.live {
+    color: #ef4444;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.player {
+    flex: 1;
+    min-height: 0;
+    background: black;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.player iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.controls button {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 11px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.controls button:hover {
+    background: #b91c1c;
+}
+
+/* HIDE SIDEBAR */
+
+.container.sidebar-hidden .sidebar {
+    width: 0;
+    min-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden;
+}
+
+/* MOBILE */
+
+@media(max-width: 650px) {
+    .container {
+        flex-direction: column-reverse;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-width: 100%;
+        height: 145px;
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .sidebar h3 {
+        display: none;
+    }
+
+    .channel {
+        min-width: 115px;
+        width: auto;
+        justify-content: center;
+        margin: 0;
+        font-size: 12px;
+    }
+
+    .channel .dot {
+        margin-right: 6px;
+    }
+
+    .main {
+        padding: 10px;
+    }
+
+    .player-header h2 {
+        font-size: 16px;
+    }
+
+    header {
+        height: 55px;
+    }
+
+    .container {
+        height: calc(100vh - 55px);
+    }
+
+    .container.sidebar-hidden {
+        flex-direction: column-reverse;
+    }
+
+    .container.sidebar-hidden .sidebar {
+        height: 0;
+        min-width: 100%;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <button class="menu-btn"
+        id="sidebarToggle"
+        onclick="toggleSidebar()"
+        aria-label="Toggle channel menu">
+        ☰
+    </button>
+
+    <div class="logo">SPORT <span>TV</span></div>
+
+    <div class="header-right">
+        LIVE CHANNELS
+    </div>
+</header>
+
+<div class="container" id="container">
+
+    <aside class="sidebar" id="sidebar">
+        <h3>Available Channels</h3>
+        <div id="channelList"></div>
+    </aside>
+
+    <main class="main">
+
+        <div class="player-header">
+            <h2 id="channelTitle">Sport TV 1</h2>
+            <span class="live">● LIVE</span>
+        </div>
+
+        <div class="player" id="player">
+            <iframe
+                id="stream"
+                src="https://thedaddy.li/player/stream-49.php"
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <div class="controls">
+            <button onclick="fullscreen()">
+                ⛶ Fullscreen
+            </button>
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+
+const channels = [
+    {
+        name: "Sport TV 1",
+        url: "https://thedaddy.li/player/stream-49.php"
+    },
+    {
+        name: "Sport TV 2",
+        url: "https://thedaddy.li/player/stream-74.php"
+    },
+    {
+        name: "Sport TV 3",
+        url: "https://thedaddy.li/player/stream-454.php"
+    },
+    {
+        name: "Sport TV 4",
+        url: "https://thedaddy.li/player/stream-289.php"
+    },
+    {
+        name: "Sport TV 5",
+        url: "https://thedaddy.li/player/stream-290.php"
+    },
+    {
+        name: "Sport TV 6",
+        url: "https://thedaddy.li/player/stream-291.php"
+    },
+    {
+        name: "Canal 11",
+        url: "https://thedaddy.li/player/stream-540.php"
+    },
+    {
+        name: "DAZN 1",
+        url: "https://thedaddy.li/player/stream-455.php"
+    },
+    {
+        name: "DAZN 2",
+        url: "https://thedaddy.li/player/stream-456.php"
+    },
+    {
+        name: "DAZN 3",
+        url: "https://thedaddy.li/player/stream-457.php"
+    },
+    {
+        name: "DAZN 4",
+        url: "https://thedaddy.li/player/stream-458.php"
+    },
+    {
+        name: "DAZN 5",
+        url: "https://thedaddy.li/player/stream-459.php"
+    },
+    {
+        name: "Benfica TV",
+        url: "https://thedaddy.li/player/stream-380.php"
+    },
+    {
+        name: "Sporting TV",
+        url: "https://thedaddy.li/player/stream-716.php"
+    }
+];
+
+const list = document.getElementById("channelList");
+const stream = document.getElementById("stream");
+const title = document.getElementById("channelTitle");
+const container = document.getElementById("container");
+const toggleButton = document.getElementById("sidebarToggle");
+
+function loadChannel(index) {
+
+    const channel = channels[index];
+
+    stream.src = channel.url;
+    title.textContent = channel.name;
+
+    document.querySelectorAll(".channel").forEach((btn, i) => {
+        btn.classList.toggle("active", i === index);
+    });
+
+}
+
+channels.forEach((channel, index) => {
+
+    const button = document.createElement("button");
+
+    button.className =
+        "channel" + (index === 0 ? " active" : "");
+
+    const dot = document.createElement("span");
+    dot.className = "dot";
+
+    button.appendChild(dot);
+    button.appendChild(
+        document.createTextNode(channel.name)
+    );
+
+    button.onclick = () => loadChannel(index);
+
+    list.appendChild(button);
+
+});
+
+function toggleSidebar() {
+
+    container.classList.toggle("sidebar-hidden");
+
+    toggleButton.textContent =
+        container.classList.contains("sidebar-hidden")
+        ? "☰"
+        : "✕";
+
+}
+
+function fullscreen() {
+
+    const player = document.getElementById("player");
+
+    if (player.requestFullscreen) {
+        player.requestFullscreen();
+    } else if (player.webkitRequestFullscreen) {
+        player.webkitRequestFullscreen();
+    }
+
+}
+
+</script>
+
+</body>
+</html>
